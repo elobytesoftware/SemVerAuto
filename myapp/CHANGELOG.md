@@ -1,5 +1,15 @@
 
 
+## [1.1.0](https://github.com/elobytesoftware/SemVerAuto/compare/1.0.0...1.1.0) (2024-08-19)
+
+
+### Features
+
+* add workflow ([c8d4a35](https://github.com/elobytesoftware/SemVerAuto/commit/c8d4a354e9be2c60b24da30b00311ed509595a13))
+* add workflow ([492c5d7](https://github.com/elobytesoftware/SemVerAuto/commit/492c5d7024ac481332029049d091be5c17b1bdbd))
+* add workflow ([eede52a](https://github.com/elobytesoftware/SemVerAuto/commit/eede52a78709bd84102a7838cdaf998a6a081373))
+* delete worflow ([7a2ed57](https://github.com/elobytesoftware/SemVerAuto/commit/7a2ed57bc42aa58251f776bd53c0b18062c12bed))
+
 ## [1.0.0](https://github.com/elobytesoftware/SemVerAuto/compare/0.2.1...1.0.0) (2024-08-19)
 
 
