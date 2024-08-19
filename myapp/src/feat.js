@@ -1,8 +1,8 @@
 
-function greet(name) {
+function feat(name) {
     return `Hello, ${name}!`;
 }
 
 console.log(greet('World'));
 
-module.exports = greet;
+export default feat;
