@@ -1,4 +1,13 @@
-# 2.0.0 (2024-08-20)
+# [2.1.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.0.0...v2.1.0) (2024-08-20)
+
+
+### Features
+
+* minor change ([1040715](https://github.com/elobytesoftware/SemVerAuto/commit/1040715ea54d71237defa4419a90fe6fa0c74f79))
+
+
+
+# [2.0.0](https://github.com/elobytesoftware/SemVerAuto/compare/e06582b54a934e1d5c42858f8e8cae925f136e11...v2.0.0) (2024-08-20)
 
 
 ### Bug Fixes
