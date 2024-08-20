@@ -1,3 +1,12 @@
+## [2.1.1](https://github.com/elobytesoftware/SemVerAuto/compare/v2.1.0...v2.1.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* height change ([339de6e](https://github.com/elobytesoftware/SemVerAuto/commit/339de6eb7c601fde808c84f857208475b1a8388b))
+
+
+
 # [2.1.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.0.0...v2.1.0) (2024-08-20)
 
 
