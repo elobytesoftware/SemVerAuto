@@ -1,8 +1,8 @@
 
-function feat(name) {
+function featnew(name) {
     return `Hello, ${name}!`;
 }
 
 console.log(greet('World'));
 
-export default feat;
+export default featnew;
