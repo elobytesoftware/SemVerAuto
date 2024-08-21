@@ -17,7 +17,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "release": "release-it",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "node commitlint.config.cjs"
   },
   "eslintConfig": {
     "extends": [
