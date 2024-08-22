@@ -1,3 +1,12 @@
+## [2.2.1](https://github.com/elobytesoftware/SemVerAuto/compare/v2.2.0...v2.2.1) (2024-08-22)
+
+
+### Bug Fixes
+
+* deleted file ([ef5b25b](https://github.com/elobytesoftware/SemVerAuto/commit/ef5b25b45c65b2123cd1f2a6f83750c10cf078c8))
+
+
+
 # [2.2.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.1.1...v2.2.0) (2024-08-21)
 
 
