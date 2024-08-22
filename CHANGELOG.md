@@ -1,3 +1,12 @@
+# [2.2.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.1.1...v2.2.0) (2024-08-21)
+
+
+### Features
+
+* husky added ([d2995b7](https://github.com/elobytesoftware/SemVerAuto/commit/d2995b7225508b51176c61a1f66003bc1e27c314))
+
+
+
 ## [2.1.1](https://github.com/elobytesoftware/SemVerAuto/compare/v2.1.0...v2.1.1) (2024-08-20)
 
 
