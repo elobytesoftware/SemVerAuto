@@ -1,0 +1,36 @@
+name: Retrieve Secrets from Vault
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  retrieve-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Vault CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y vault
+
+      - name: Retrieve Secret from Vault
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+        run: |
+    
+          vault login $VAULT_TOKEN
+          
+          
+          secret=$(vault kv get -field=value kv/data/SemVer)
+
+          
+          echo "SECRET_VALUE=$secret" >> $GITHUB_ENV
+
+      - name: Use the Secret
+        run: |
+          echo "The secret is: $SECRET_VALUE"
