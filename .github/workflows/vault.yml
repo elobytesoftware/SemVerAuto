@@ -18,11 +18,15 @@ jobs:
           url: ${{ secrets.VAULT_ADDR }}
           method: "token"
           token: ${{ secrets.VAULT_TOKEN }}
-          secrets: "kv/data/SemVer:key1"
+          secrets: |
+             kv/data/SemVer key1 ;
+             kv/data/SemVer key2
 
-      - name: Use the Secret
+      - name: Use the Retrieved Secrets
         run: |
-          echo "The secret is: $SECRET_VALUE"
+          echo "Key1 value: ${{ steps.retrieve-secrets.outputs.key1 }}"
+          echo "Key2 value: ${{ steps.retrieve-secrets.outputs.key2 }}"
+
 
 
           
