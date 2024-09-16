@@ -14,6 +14,7 @@ jobs:
 
       - name: Retrieve Secret from Vault
         uses: hashicorp/vault-action@v2.4.0
+        id: vault
         with:
           url: ${{ secrets.VAULT_ADDR }}
           method: "token"
@@ -24,8 +25,8 @@ jobs:
 
       - name: Use the Retrieved Secrets
         run: |
-          echo "Key1 value: ${{ steps.retrieve-secrets.outputs.key1 }}"
-          echo "Key2 value: ${{ steps.retrieve-secrets.outputs.key2 }}"
+          echo "Key1 value: ${{ steps.vault.outputs.key1 }}"
+          echo "Key2 value: ${{ steps.vault.outputs.key2 }}"
 
 
 
