@@ -29,9 +29,3 @@ jobs:
 
 
 
-          
-          echo "SECRET_VALUE=$secret" >> $GITHUB_ENV
-
-      - name: Use the Secret
-        run: |
-          echo "The secret is: $SECRET_VALUE"
