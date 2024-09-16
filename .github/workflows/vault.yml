@@ -12,21 +12,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Vault CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y vault
-
       - name: Retrieve Secret from Vault
-        env:
-          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: "token"
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: "kv/data/SemVer"
+
+      - name: Use the Secret
         run: |
-    
-          vault login $VAULT_TOKEN
-          
-          
-          secret=$(vault kv get -field=value kv/data/SemVer)
+          echo "The secret is: $SECRET_VALUE"
+
 
           
           echo "SECRET_VALUE=$secret" >> $GITHUB_ENV
