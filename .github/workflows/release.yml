@@ -33,3 +33,35 @@ jobs:
         tag_name: ${{ steps.changelog.outputs.tag }}
         release_name: ${{ steps.changelog.outputs.tag }}
         body: ${{ steps.changelog.outputs.clean_changelog }}
+
+    # Step to retrieve Vault secrets
+    - name: Retrieve Secrets from Vault
+      id: vault-secrets
+      uses: hashicorp/vault-action@v2
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      with:
+        url: ${{ secrets.VAULT_ADDR }}
+        method: "token"
+        token: ${{ secrets.VAULT_TOKEN }}
+        secrets: |
+          kv/data/SemVer dockerUsername | DOCKER_USERNAME
+          kv/data/SemVer dockerPassword | DOCKER_PASSWORD
+          kv/data/SemVer dockerImageUrl | DOCKER_IMAGE_URL
+          kv/data/SemVer renderDeployHook | RENDER_DEPLOY_HOOK
+
+    # Step to log in to Docker Hub
+    - name: Log in to Docker Hub
+      run: echo ${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }} | docker login -u ${{ steps.vault-secrets.outputs.DOCKER_USERNAME }} --password-stdin
+
+    # Build Docker Image
+    - name: Build Docker Image
+      run: docker build -t ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }} .
+
+    # Push Docker Image to Docker Hub
+    - name: Push Docker Image
+      run: docker push ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}
+
+    # Trigger Render Deployment using Deploy Hook
+    - name: Trigger Render Deployment
+      run: curl -X POST ${{ steps.vault-secrets.outputs.RENDER_DEPLOY_HOOK }}
+
