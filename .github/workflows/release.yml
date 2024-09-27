@@ -44,9 +44,9 @@ jobs:
         method: "token"
         token: ${{ secrets.VAULT_TOKEN }}
         secrets: |
-          kv/data/SemVer dockerUsername | DOCKER_USERNAME
-          kv/data/SemVer dockerPassword | DOCKER_PASSWORD
-          kv/data/SemVer dockerImageUrl | DOCKER_IMAGE_URL
+          kv/data/SemVer dockerUsername | DOCKER_USERNAME;
+          kv/data/SemVer dockerPassword | DOCKER_PASSWORD;
+          kv/data/SemVer dockerImageUrl | DOCKER_IMAGE_URL;
           kv/data/SemVer renderDeployHook | RENDER_DEPLOY_HOOK
 
     # Step to log in to Docker Hub
