@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - releases/prod/*
+      - releases/qa/*
 
 jobs:
   changelog:
@@ -47,7 +49,10 @@ jobs:
           kv/data/SemVer dockerUsername | DOCKER_USERNAME;
           kv/data/SemVer dockerPassword | DOCKER_PASSWORD;
           kv/data/SemVer dockerImageURL | DOCKER_IMAGE_URL;
-          kv/data/SemVer renderDeployHook | RENDER_DEPLOY_HOOK
+          kv/data/SemVer mainDeployHook | MAIN_DEPLOY_HOOK;
+          kv/data/SemVer prodDeployHook | PROD_DEPLOY_HOOK;
+          kv/data/SemVer qaDeployHook | QA_DEPLOY_HOOK
+
 
     # Step to log in to Docker Hub
     - name: Log in to Docker Hub
@@ -62,6 +67,43 @@ jobs:
       run: docker push ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}
 
     # Trigger Render Deployment using Deploy Hook
-    - name: Trigger Render Deployment
-      run: curl -X POST ${{ steps.vault-secrets.outputs.RENDER_DEPLOY_HOOK }}
+    - name: Dev Deployment
+      run: curl -X POST ${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}
+
+    - name: QA Deployment
+      run: curl -X POST ${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}
+
+    - name: Prod Deployment
+      run: curl -X POST ${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}
+
+
+
+    # # Step 4: Deploy to Render using Render API (Create a new service)
+    # - name: Create a New Service on Render
+    #   env:
+    #     RENDER_API_TOKEN: ${{ secrets.RENDER_API_TOKEN }}
+    #     DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/my-react-app:latest
+    #   run: |
+    #     curl -X POST \
+    #       -H "Authorization: Bearer $RENDER_API_TOKEN" \
+    #       -H "Content-Type: application/json" \
+    #       -d '{
+    #         "serviceDetails": {
+    #           "name": "my-react-app",                          
+    #           "repo": {
+    #             "provider": "github",
+    #             "owner": "my-github-user",                     
+    #             "name": "my-react-app",                        
+    #             "branch": "main"
+    #           },
+    #           "env": "docker",
+    #           "autoDeploy": true,
+    #           "dockerDetails": {
+    #             "dockerImage": "'"$DOCKER_IMAGE_URL"'",             
+    #           }
+    #         },
+    #         "plan": "free"                                     
+    #       }' \
+    #       https://api.render.com/v1/services
+
 
