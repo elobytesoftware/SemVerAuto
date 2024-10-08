@@ -53,11 +53,14 @@ jobs:
           kv/data/SemVer prodDeployHook | PROD_DEPLOY_HOOK;
           kv/data/SemVer qaDeployHook | QA_DEPLOY_HOOK
 
-
+    - name: Use the Retrieved Secrets
+      run: |
+        echo "username: ${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}"
+        echo "password: ${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}"
 
     # Step to log in to Docker Hub
     - name: Log in to Docker Hub
-      run: echo "${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}" | docker login -u "${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}" --password-stdin
+      run: echo ${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }} | docker login -u ${{ steps.vault-secrets.outputs.DOCKER_USERNAME }} --password-stdin
 
     # Build Docker Image
     - name: Build Docker Image
