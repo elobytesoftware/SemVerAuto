@@ -2,7 +2,7 @@ name: Build
 
 on:
   workflow_run:
-    workflows: ["Release and Secret"]
+    workflows: ["Release and Secrets"]
     types:
       - completed
 

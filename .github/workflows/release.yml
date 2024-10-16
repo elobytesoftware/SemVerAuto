@@ -1,4 +1,4 @@
-name: Release and Secret
+name: Release and Secrets
 
 on:
   push:
