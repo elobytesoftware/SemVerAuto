@@ -1,3 +1,21 @@
+## [2.9.1](https://github.com/elobytesoftware/SemVerAuto/compare/v2.9.0...v2.9.1) (2024-10-16)
+
+
+### Bug Fixes
+
+* release ([c3d0561](https://github.com/elobytesoftware/SemVerAuto/commit/c3d0561f23b4a36b5ad2df0dd61a0479a0eedb2e))
+
+
+
+# [2.9.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.8.0...v2.9.0) (2024-10-08)
+
+
+### Features
+
+* try3 ([db5d6ee](https://github.com/elobytesoftware/SemVerAuto/commit/db5d6ee013bc9fa6d0b968f8aa3faab5a98461c0))
+
+
+
 # [2.8.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.7.0...v2.8.0) (2024-10-07)
 
 
@@ -22,24 +40,6 @@
 ### Features
 
 * automate deployment ([ab913fc](https://github.com/elobytesoftware/SemVerAuto/commit/ab913fc7a49d492078c20bbd070bd4900a5d2cab))
-
-
-
-# [2.5.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.4.0...v2.5.0) (2024-09-27)
-
-
-### Features
-
-* automate deployment ([8de41aa](https://github.com/elobytesoftware/SemVerAuto/commit/8de41aa452c24452a0850870e4621f9939175378))
-
-
-
-# [2.4.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.3.1...v2.4.0) (2024-09-25)
-
-
-### Features
-
-* addes docker img ([1ae0d1d](https://github.com/elobytesoftware/SemVerAuto/commit/1ae0d1d95768102d174477541184542600e94366))
 
 
 

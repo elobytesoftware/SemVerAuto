@@ -1,4 +1,4 @@
-name: Release Workflow
+name: Release and Secrets
 
 on:
   push:
@@ -36,11 +36,14 @@ jobs:
         release_name: ${{ steps.changelog.outputs.tag }}
         body: ${{ steps.changelog.outputs.clean_changelog }}
 
+  retrieve_secrets:
+    runs-on: ubuntu-latest
+    needs: changelog
+    steps:
     # Step to retrieve Vault secrets
     - name: Retrieve Secrets from Vault
       id: vault-secrets
       uses: hashicorp/vault-action@v2
-      if: ${{ steps.changelog.outputs.skipped == 'false' }}
       with:
         url: ${{ secrets.VAULT_ADDR }}
         method: "token"
@@ -52,58 +55,77 @@ jobs:
           kv/data/SemVer mainDeployHook | MAIN_DEPLOY_HOOK;
           kv/data/SemVer prodDeployHook | PROD_DEPLOY_HOOK;
           kv/data/SemVer qaDeployHook | QA_DEPLOY_HOOK
+    
+    - name: Set Environment Variables
+      run: |
+        echo "DOCKER_USERNAME=${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}" >> $GITHUB_ENV
+        echo "DOCKER_PASSWORD=${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}" >> $GITHUB_ENV
+        echo "DOCKER_IMAGE_URL=${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}" >> $GITHUB_ENV
+        echo "MAIN_DEPLOY_HOOK=${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}" >> $GITHUB_ENV
+        echo "PROD_DEPLOY_HOOK=${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}" >> $GITHUB_ENV
+        echo "QA_DEPLOY_HOOK=${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}" >> $GITHUB_ENV
 
 
-    # Step to log in to Docker Hub
-    - name: Log in to Docker Hub
-      run: echo ${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }} | docker login -u ${{ steps.vault-secrets.outputs.DOCKER_USERNAME }} --password-stdin
+    # - name: Use the Retrieved Secrets
+    #   run: |
+    #     echo "username: ${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}"
+    #     echo "password: ${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}"
 
-    # Build Docker Image
-    - name: Build Docker Image
-      run: docker build -t ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }} .
+    # # Step to log in to Docker Hub
+    # - name: Log in to Docker Hub
+    #   run: echo ${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }} | docker login -u ${{ steps.vault-secrets.outputs.DOCKER_USERNAME }} --password-stdin
 
-    # Push Docker Image to Docker Hub
-    - name: Push Docker Image
-      run: docker push ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}
+    # # Build Docker Image
+    # - name: Build Docker Image
+    #   run: docker build -t ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }} .
 
-    # Trigger Render Deployment using Deploy Hook
-    - name: Dev Deployment
-      run: curl -X POST ${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}
+    # # Push Docker Image to Docker Hub
+    # - name: Push Docker Image
+    #   run: docker push ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}
 
-    - name: QA Deployment
-      run: curl -X POST ${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}
+    # - name: Trigger Deployment
+    #   run: |
+    #       if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+    #         curl -X POST ${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }};
+    #       elif [[ "${{ github.ref }}" == refs/heads/releases/qa* ]]; then
+    #         curl -X POST ${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }};
+    #       elif [[ "${{ github.ref }}" == refs/heads/releases/prod* ]]; then
+    #         curl -X POST ${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }};
+    #       fi
+    #   if: ${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK != '0' || steps.vault-secrets.outputs.QA_DEPLOY_HOOK != '0' || steps.vault-secrets.outputs.PROD_DEPLOY_HOOK != '0' }}
 
-    - name: Prod Deployment
-      run: curl -X POST ${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}
 
-
-
-    # # Step 4: Deploy to Render using Render API (Create a new service)
-    # - name: Create a New Service on Render
+    # - name: Create New Service on Render
+    #   if: |
+    #     github.ref == 'refs/heads/main' && steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK == '0' ||
+    #     startsWith(github.ref, 'refs/heads/releases/qa') && steps.vault-secrets.outputs.QA_DEPLOY_HOOK == '0' ||
+    #     startsWith(github.ref, 'refs/heads/releases/prod') && steps.vault-secrets.outputs.PROD_DEPLOY_HOOK == '0'
     #   env:
     #     RENDER_API_TOKEN: ${{ secrets.RENDER_API_TOKEN }}
-    #     DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/my-react-app:latest
+    #     BRANCH: ${{ github.ref_name }}
+    #     DOCKER_IMAGE: ${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}
+    #     SERVICE_NAME: ${{ github.ref == 'refs/heads/main' && 'my-dev-app' || startsWith(github.ref, 'refs/heads/releases/qa') && 'my-qa-app' || startsWith(github.ref, 'refs/heads/releases/prod') && 'my-prod-app' }}
     #   run: |
+    #     echo "Creating a new Render service for the $BRANCH environment: ${{SERVICE_NAME}}"
     #     curl -X POST \
-    #       -H "Authorization: Bearer $RENDER_API_TOKEN" \
+    #       -H "Authorization: Bearer ${{RENDER_API_TOKEN}}" \
     #       -H "Content-Type: application/json" \
     #       -d '{
     #         "serviceDetails": {
-    #           "name": "my-react-app",                          
+    #           "name": "${{SERVICE_NAME}}",
     #           "repo": {
     #             "provider": "github",
-    #             "owner": "my-github-user",                     
-    #             "name": "my-react-app",                        
-    #             "branch": "main"
+    #             "owner": "my-github-user",
+    #             "name": "my-repo-name",
+    #             "branch": "'"${BRANCH}"'"
     #           },
     #           "env": "docker",
     #           "autoDeploy": true,
     #           "dockerDetails": {
-    #             "dockerImage": "'"$DOCKER_IMAGE_URL"'",             
+    #             "dockerImage": "'"${DOCKER_IMAGE}"'"
     #           }
     #         },
-    #         "plan": "free"                                     
+    #         "plan": "free"
     #       }' \
     #       https://api.render.com/v1/services
-
-
+    
