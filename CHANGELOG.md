@@ -1,3 +1,12 @@
+# [2.14.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.13.0...v2.14.0) (2024-10-17)
+
+
+### Features
+
+* build3 ([d6ec67d](https://github.com/elobytesoftware/SemVerAuto/commit/d6ec67d4ed9a87b6bde0c5dc17646eccab949715))
+
+
+
 # [2.13.0](https://github.com/elobytesoftware/SemVerAuto/compare/v2.12.0...v2.13.0) (2024-10-16)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * build ([6535c0a](https://github.com/elobytesoftware/SemVerAuto/commit/6535c0a6115442f8d68a233c695b43d54897fdbb))
-
-
-
-## [2.9.1](https://github.com/elobytesoftware/SemVerAuto/compare/v2.9.0...v2.9.1) (2024-10-16)
-
-
-### Bug Fixes
-
-* release ([c3d0561](https://github.com/elobytesoftware/SemVerAuto/commit/c3d0561f23b4a36b5ad2df0dd61a0479a0eedb2e))
 
 
 
