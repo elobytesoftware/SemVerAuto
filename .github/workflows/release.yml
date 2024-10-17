@@ -85,6 +85,9 @@ jobs:
         name: docker-secrets
         path: ./secrets.json 
 
+    - name: List artifacts
+      run: ls -alh
+
 
     # - name: Use the Retrieved Secrets
     #   run: |
