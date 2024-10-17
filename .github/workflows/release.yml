@@ -55,15 +55,35 @@ jobs:
           kv/data/SemVer mainDeployHook | MAIN_DEPLOY_HOOK;
           kv/data/SemVer prodDeployHook | PROD_DEPLOY_HOOK;
           kv/data/SemVer qaDeployHook | QA_DEPLOY_HOOK
+
+    - name: Determine Environment
+      id: set-environment
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
+        elif [[ "${{ github.ref }}" == refs/heads/releases/qa* ]]; then
+          echo "ENVIRONMENT=QA" >> $GITHUB_ENV
+        elif [[ "${{ github.ref }}" == refs/heads/releases/prod* ]]; then
+          echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+        fi
     
     - name: Set Environment Variables
       run: |
-        echo "DOCKER_USERNAME=${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}" >> $GITHUB_ENV
-        echo "DOCKER_PASSWORD=${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}" >> $GITHUB_ENV
-        echo "DOCKER_IMAGE_URL=${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}" >> $GITHUB_ENV
-        echo "MAIN_DEPLOY_HOOK=${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}" >> $GITHUB_ENV
-        echo "PROD_DEPLOY_HOOK=${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}" >> $GITHUB_ENV
-        echo "QA_DEPLOY_HOOK=${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}" >> $GITHUB_ENV
+        echo '{
+          "DOCKER_USERNAME"="${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}",
+          "DOCKER_PASSWORD"="${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}", 
+          "DOCKER_IMAGE_URL"="${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}", 
+          "MAIN_DEPLOY_HOOK"="${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}", 
+          "PROD_DEPLOY_HOOK"="${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}", 
+          "QA_DEPLOY_HOOK"="${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}",
+          "ENVIRONMENT": "${{ env.ENVIRONMENT }}"
+          }' > secrets.json
+
+    - name: Upload Secrets Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: docker-secrets
+        path: ./secrets.json 
 
 
     # - name: Use the Retrieved Secrets

@@ -1,4 +1,4 @@
-name: Build
+name: Build and Push Docker Image
 
 on:
   workflow_run:
@@ -11,27 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set Up Node.js
-      uses: actions/setup-node@v3
+    - name: Download Secrets Artifact
+      uses: actions/download-artifact@v2
       with:
-        node-version: '18.18.0'
+        name: docker-secrets
 
-    - name: Determine Environment
-      id: set-environment
+    - name: Read secrets.json and set environment variables
       run: |
-        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == refs/heads/releases/qa* ]]; then
-          echo "ENVIRONMENT=qa" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == refs/heads/releases/prod* ]]; then
-          echo "ENVIRONMENT=prod" >> $GITHUB_ENV
-        fi
+        secrets=$(cat secrets.json)
+        echo "DOCKER_USERNAME=$(echo $secrets | jq -r '.DOCKER_USERNAME')" >> $GITHUB_ENV
+        echo "DOCKER_PASSWORD=$(echo $secrets | jq -r '.DOCKER_PASSWORD')" >> $GITHUB_ENV
+        echo "DOCKER_IMAGE_URL=$(echo $secrets | jq -r '.DOCKER_IMAGE_URL')" >> $GITHUB_ENV
+        echo "ENVIRONMENT=$(echo $secrets | jq -r '.ENVIRONMENT')" >> $GITHUB_ENV
 
     - name: Log in to Docker Hub
       run: echo ${{ env.DOCKER_PASSWORD }} | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
 
     - name: Build and Tag Docker Image
-      run: docker build -t ${{ env.DOCKER_IMAGE_URL }}:${{ env.ENVIRONMENT }} .
+      run: |
+        docker build -t my-app:${{ env.ENVIRONMENT }} .
+        docker tag my-app:${{ env.ENVIRONMENT }} ${{ env.DOCKER_IMAGE_URL }}:${{ env.ENVIRONMENT }}
 
     - name: Push Docker Image
       run: docker push ${{ env.DOCKER_IMAGE_URL }}:${{ env.ENVIRONMENT }}
+
+
