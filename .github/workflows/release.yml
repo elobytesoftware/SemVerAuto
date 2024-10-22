@@ -70,12 +70,12 @@ jobs:
     - name: Set Environment Variables
       run: |
         echo '{
-          "DOCKER_USERNAME"="${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}",
-          "DOCKER_PASSWORD"="${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}", 
-          "DOCKER_IMAGE_URL"="${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}", 
-          "MAIN_DEPLOY_HOOK"="${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}", 
-          "PROD_DEPLOY_HOOK"="${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}", 
-          "QA_DEPLOY_HOOK"="${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}",
+          "DOCKER_USERNAME": "${{ steps.vault-secrets.outputs.DOCKER_USERNAME }}",
+          "DOCKER_PASSWORD":  "${{ steps.vault-secrets.outputs.DOCKER_PASSWORD }}", 
+          "DOCKER_IMAGE_URL": "${{ steps.vault-secrets.outputs.DOCKER_IMAGE_URL }}", 
+          "MAIN_DEPLOY_HOOK": "${{ steps.vault-secrets.outputs.MAIN_DEPLOY_HOOK }}", 
+          "PROD_DEPLOY_HOOK": "${{ steps.vault-secrets.outputs.PROD_DEPLOY_HOOK }}", 
+          "QA_DEPLOY_HOOK": "${{ steps.vault-secrets.outputs.QA_DEPLOY_HOOK }}",
           "ENVIRONMENT": "${{ env.ENVIRONMENT }}"
           }' > secrets.json
 
