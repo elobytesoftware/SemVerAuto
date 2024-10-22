@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  build-and-push:
+  Deploy_to_env:
     runs-on: ubuntu-latest
 
     steps:
