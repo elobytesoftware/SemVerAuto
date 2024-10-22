@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      
+
     - name: Download Secrets Artifact
       uses: actions/download-artifact@v4
       with:
@@ -41,5 +41,11 @@ jobs:
 
     - name: Push Docker Image
       run: docker push ${{ env.DOCKER_IMAGE_URL }}
+
+    - name: Upload Secrets Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-secrets
+        path: ./secrets.json 
 
 
