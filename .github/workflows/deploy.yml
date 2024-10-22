@@ -40,5 +40,4 @@ jobs:
           curl -X POST ${{ env.PROD_DEPLOYHOOK }}
         elif [ "${{ env.ENVIRONMENT }}" == "QA" ]; then
           curl -X POST ${{ env.QA_DEPLOYHOOK }}
-        else
-          echo "Unknown environment: ${{ env.ENVIRONMENT }}. Deployment skipped."
+        fi
