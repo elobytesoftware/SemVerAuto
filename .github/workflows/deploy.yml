@@ -1,0 +1,44 @@
+name: Deployment
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Download Secrets Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: docker-secrets
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: elobytesoftware/SemVerAuto
+        run-id:  ${{github.event.workflow_run.id}}
+
+
+    - name: Read secrets.json and set environment variables
+      run: |
+        secrets=$(cat secrets.json)
+        echo "MAIN_DEPLOYHOOK=$(echo $secrets | jq -r '.MAIN_DEPLOY_HOOK')" >> $GITHUB_ENV
+        echo "PROD_DEPLOYHOOK=$(echo $secrets | jq -r '.PROD_DEPLOY_HOOK')" >> $GITHUB_ENV
+        echo "QA_DEPLOYHOOK=$(echo $secrets | jq -r '.QA_DEPLOY_HOOK')" >> $GITHUB_ENV
+        echo "ENVIRONMENT=$(echo $secrets | jq -r '.ENVIRONMENT')" >> $GITHUB_ENV
+
+
+    - name: Deploy to Environment
+      run: |
+        if [ "${{ env.ENVIRONMENT }}" == "DEV" ]; then
+          curl -X POST ${{ env.MAIN_DEPLOYHOOK }}
+        elif [ "${{ env.ENVIRONMENT }}" == "PROD" ]; then
+          curl -X POST ${{ env.PROD_DEPLOYHOOK }}
+        elif [ "${{ env.ENVIRONMENT }}" == "QA" ]; then
+          curl -X POST ${{ env.QA_DEPLOYHOOK }}
+        else
+          echo "Unknown environment: ${{ env.ENVIRONMENT }}. Deployment skipped."
