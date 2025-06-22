@@ -1,11 +1,7 @@
 name: Release and Secrets
 
 on:
-  push:
-    branches:
-      - main
-      - releases/prod/*
-      - releases/qa/*
+  workflow_dispatch:
 
 jobs:
   changelog:
