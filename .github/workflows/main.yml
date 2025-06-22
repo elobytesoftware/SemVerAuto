@@ -1,0 +1,46 @@
+name: Manual Docker Deploy to EC2
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_NAME: elobooks-api
+  APP_PORT: 3333
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Save EC2 SSH Key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" | base64 --decode > ec2-key.pem
+          chmod 600 ec2-key.pem
+
+      - name: Upload Docker Context to EC2
+        run: |
+          scp -i ec2-key.pem -o StrictHostKeyChecking=no \
+          dockerfile .env.local package.json main.js \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app
+
+      - name: SSH into EC2 and Build & Run Container
+        run: |
+          ssh -i ec2-key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ~/app
+
+            # Stop and remove existing container if any
+            docker stop ${{ env.APP_NAME }} || true
+            docker rm ${{ env.APP_NAME }} || true
+
+            # Build Docker image
+            docker build -t ${{ env.APP_NAME }} .
+
+            # Run new container with .env
+            docker run -d --name ${{ env.APP_NAME }} --env-file .env.local -p ${{ env.APP_PORT }}:${{ env.APP_PORT }} ${{ env.APP_NAME }}
+          EOF
+
+      - name: Clean Up SSH Key
+        run: rm ec2-key.pem
