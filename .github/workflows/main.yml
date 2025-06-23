@@ -1,11 +1,13 @@
-name: Manual Docker Deploy to EC2
+name: Deploy Dummy App to EC2
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
-  APP_NAME: elobooks-api
-  APP_PORT: 3333
+  APP_NAME: dummy-app
+  APP_PORT: 80
 
 jobs:
   deploy:
@@ -20,27 +22,26 @@ jobs:
           echo "${{ secrets.EC2_KEY }}" | base64 --decode > ec2-key.pem
           chmod 600 ec2-key.pem
 
-      - name: Upload Docker Context to EC2
+      - name: Upload Project Files to EC2
         run: |
           scp -i ec2-key.pem -o StrictHostKeyChecking=no \
-          dockerfile .env.local package.json main.js \
-          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app
+          -r . ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/dummy-app
 
-      - name: SSH into EC2 and Build & Run Container
+      - name: SSH and Build/Run Docker Container
         run: |
-          ssh -i ec2-key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/app
+          ssh -i ec2-key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            cd ~/dummy-app
 
-            # Stop and remove existing container if any
+            # Stop and remove previous container if exists
             docker stop ${{ env.APP_NAME }} || true
             docker rm ${{ env.APP_NAME }} || true
 
-            # Build Docker image
+            # Build the Docker image
             docker build -t ${{ env.APP_NAME }} .
 
-            # Run new container with .env
-            docker run -d --name ${{ env.APP_NAME }} --env-file .env.local -p ${{ env.APP_PORT }}:${{ env.APP_PORT }} ${{ env.APP_NAME }}
+            # Run the container (serve on port 80)
+            docker run -d --name ${{ env.APP_NAME }} -p ${{ env.APP_PORT }}:80 ${{ env.APP_NAME }}
           EOF
 
-      - name: Clean Up SSH Key
+      - name: Cleanup SSH Key
         run: rm ec2-key.pem
