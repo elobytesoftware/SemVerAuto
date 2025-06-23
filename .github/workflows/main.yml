@@ -40,7 +40,7 @@ jobs:
             docker build -t ${{ env.APP_NAME }} .
 
             # Run the container (serve on port 80)
-            docker run -d --name ${{ env.APP_NAME }} -p ${{ env.APP_PORT }}:80 ${{ env.APP_NAME }}
+            docker run -d --name ${{ env.APP_NAME }} -p ${{ env.APP_PORT }}:4000 ${{ env.APP_NAME }}
           EOF
 
       - name: Cleanup SSH Key
