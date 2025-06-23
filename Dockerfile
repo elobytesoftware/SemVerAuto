@@ -1,5 +1,5 @@
 
-FROM node:18.18.0-alpine as build
+FROM node:18.18.0-alpine AS build
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN apk add --no-cache nginx
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose port 80 to the outside world
-EXPOSE 80
+EXPOSE 4000
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
