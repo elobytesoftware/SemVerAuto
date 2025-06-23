@@ -7,7 +7,7 @@ on:
 
 env:
   APP_NAME: dummy-app
-  APP_PORT: 80
+  APP_PORT: 4000
 
 jobs:
   deploy:
